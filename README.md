@@ -14,6 +14,10 @@ The server sends a "STOP" message to the client, at which point the client stops
 ## Disclaimer⚠️❗
 The program continously generates random dialogue boxes in 500ms time intervel which can be modified by the user and can be stopped only by sending the STOP message by the server. Continously ruunning the script may slow down your PC. It is created just for fun with your friends and doesnot amplify any malicious activity.
 
+Make sure to change the `HOST` in client.py into the ip address of the computer where server.py is running
+To get the ip address of your system, run `curl ifconfig.me` and place this ip address in the client.py ad HOST so that the computer where client.py is running will be connected to your system on specified `PORT`
+
+
 ### To modify the time interval
 Change 500 to your desired time interval
 ```bash
