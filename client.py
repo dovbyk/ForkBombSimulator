@@ -1,6 +1,7 @@
 import tkinter as tk
 import threading
 import socket
+import time
 
 running = True  
 
