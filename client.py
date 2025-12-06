@@ -55,8 +55,8 @@ output_widgets = []
 create_dialogs(0)
 
 
-HOST = "10.22.27.252" #Keep the ip address of the common network used. Check it through ip addr or any other command 
-PORT = 65432        # The port used by the server
+HOST = "10.22.27.252" # This is the ip address of the server computer connected in a common network with the client. Use relevant command to see the ip address of your pc and keep it here
+PORT = 65432        # The port used by the server.
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     s.connect((HOST, PORT))
