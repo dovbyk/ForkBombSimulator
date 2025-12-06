@@ -55,7 +55,7 @@ output_widgets = []
 create_dialogs(0)
 
 
-HOST = '103.161.223.14'  # The server's hostname or IP address
+HOST = "10.22.27.252"
 PORT = 65432        # The port used by the server
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
