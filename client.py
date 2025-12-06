@@ -55,7 +55,7 @@ output_widgets = []
 create_dialogs(0)
 
 
-HOST = "10.22.27.252"
+HOST = "10.22.27.252" #Keep the ip address of the common network used. Check it through ip addr or any other command 
 PORT = 65432        # The port used by the server
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
