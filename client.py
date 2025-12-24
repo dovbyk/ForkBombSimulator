@@ -2,73 +2,152 @@ import tkinter as tk
 import threading
 import socket
 import time
+import random
+import os
+import sys
 
-running = True  
+
+def play_beep():
+    
+    try:
+        if sys.platform.startswith("win"):
+            import winsound
+            winsound.Beep(1200, 200)  
+        else:
+            # Linux / macOS fallback
+            os.system('printf "\\a"')
+    except Exception:
+        pass
+
+
+running = True
+output_widgets = []
+
 
 def run_program(output_widgets):
-    """Simulate a program that produces continuous output."""
+    
     count = 1
     global running
+
     while running:
-        time.sleep(0.1)  
-        text = f"Critical error: System failure detected, immediate action required {count} !\n"
+        time.sleep(0.1)
+
+        remaining = max(0, 100 - count)
+        text = (
+            f"[!!] KERNEL PANIC #{count}\n"
+            f"     › Memory corruption detected\n"
+            f"     › Unauthorized process escalation\n"
+            f"     › Data integrity compromised\n"
+            f"     › Encrypting disk sectors... {remaining}% remaining\n"
+            f"     › DO NOT TURN OFF YOUR COMPUTER\n\n"
+        )
+
         for widget in output_widgets:
-            widget.insert(tk.END, text)  
-            widget.see(tk.END)  
+            try:
+                widget.insert(tk.END, text)
+                widget.see(tk.END)
+            except tk.TclError:
+                pass
+
         count += 1
 
+
 def receive_message(client_socket):
+    
     global running
+
     while running:
         try:
-            message = client_socket.recv(1024).decode('utf-8')
+            message = client_socket.recv(1024).decode("utf-8")
             if message == "STOP":
+                for widget in output_widgets:
+                    widget.insert(
+                        tk.END,
+                        "\n[✔] Remote override detected.\n"
+                        "[✔] System stabilized.\n"
+                        "[✔] Threat neutralized.\n"
+                    )
                 running = False
                 break
         except Exception as e:
             print(f"Error receiving message: {e}")
             break
 
-def create_dialogs(index):
-    if running:  # Continue creating dialogs while the program is running
-        dialog = tk.Toplevel(root)
-        dialog.title(f"Program Output {index + 1}")
-        dialog.geometry("1200x800")
-        dialog.resizable(False, False)
-        
-        output = tk.Text(dialog, wrap=tk.WORD, state=tk.NORMAL)
-        output.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
-        output_widgets.append(output)
-        
-        # Schedule the next dialog creation after 1 second
-        root.after(500, create_dialogs, index + 1)
 
+def flash_title(dialog, state=True):
+    
+    if not running:
+        return
+
+    dialog.title(
+        "⚠ SYSTEM BREACH DETECTED ⚠"
+        if state
+        else "!!! DATA LOSS IMMINENT !!!"
+    )
+    dialog.after(300, flash_title, dialog, not state)
+
+
+def create_dialogs(index):
+    
+    if not running:
+        return
+
+    #Beep Sound 
+    play_beep()
+
+    dialog = tk.Toplevel(root)
+    dialog.configure(bg="black")
+
+    x = random.randint(0, 400)
+    y = random.randint(0, 200)
+    dialog.geometry(f"1200x800+{x}+{y}")
+    dialog.resizable(False, False)
+
+    output = tk.Text(
+        dialog,
+        wrap=tk.WORD,
+        bg="black",
+        fg="red",
+        insertbackground="red",
+        font=("Courier New", 12, "bold"),
+    )
+    output.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
+
+    output_widgets.append(output)
+
+    flash_title(dialog)
+
+    #EXTRA panic beep 
+    root.after(150, play_beep)
+
+    # Create next dialog after xx ms
+    root.after(3000, create_dialogs, index + 1) #Change 3000 to 500 for speed 
+
+
+#MAIN 
 
 root = tk.Tk()
-root.title("Main Window")
+root.title("System Monitor")
 root.geometry("1200x800")
+root.configure(bg="black")
 root.resizable(False, False)
-
-output_widgets = []
-
 
 create_dialogs(0)
 
-
-HOST = "10.22.27.252" # This is the ip address of the server computer connected in a common network with the client. Use relevant command to see the ip address of your pc and keep it here
-PORT = 65432        # The port used by the server.
+HOST = "10.22.23.212"  # Server IP: look using ip addr show OR ipconfig 
+PORT = 65432           # Server port
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     s.connect((HOST, PORT))
-    # Start the output generation in a separate thread
-    thread = threading.Thread(target=run_program, args=(output_widgets,))
-    thread.daemon = True
-    thread.start()
-    
-    # Start a thread to listen for messages from the server
-    listen_thread = threading.Thread(target=receive_message, args=(s,))
-    listen_thread.daemon = True
+
+    output_thread = threading.Thread(
+        target=run_program, args=(output_widgets,), daemon=True
+    )
+    output_thread.start()
+
+    listen_thread = threading.Thread(
+        target=receive_message, args=(s,), daemon=True
+    )
     listen_thread.start()
 
-    # Run the Tkinter event loop
     root.mainloop()
