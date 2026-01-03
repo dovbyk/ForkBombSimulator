@@ -1,4 +1,4 @@
-## ForkBombSimulato (A Client-Server based program)
+## ForkBombSimulator (A Client-Server based program)
 
 This project is a customized version of the traditional ForkBomb bash script with some added GUI. It consists of a client-server application built with Python. The client, when executed, connects to the server and displays simulated program output in real-time through a graphical user interface (GUI) built with Tkinter. The program continuously displays a "Critical error" message with incremental count numbers in separate dialog windows.
 
